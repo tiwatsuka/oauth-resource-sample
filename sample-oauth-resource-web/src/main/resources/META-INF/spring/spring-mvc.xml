@@ -28,7 +28,7 @@
 
     <mvc:default-servlet-handler />
 
-    <context:component-scan base-package="org.sample.oauth.app" />
+    <context:component-scan base-package="org.sample.oauth.api" />
 
     <mvc:resources mapping="/resources/**"
         location="/resources/,classpath:META-INF/resources/"
