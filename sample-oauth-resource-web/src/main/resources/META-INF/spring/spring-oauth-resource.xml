@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xmlns:oauth2="http://www.springframework.org/schema/security/oauth2"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
+    ">
+
+	<sec:http pattern="/api/**" create-session="stateless"
+		use-expressions="true" 
+		entry-point-ref="oauth2AuthenticationEntryPoint">
+		<sec:expression-handler ref="oauth2ExpressionHandler"/>
+		<sec:intercept-url pattern="/api/comment/**" method="GET" access="#oauth2.hasScope('READ')" />
+		<sec:intercept-url pattern="/api/comment/**" method="POST" access="#oauth2.hasScope('CREATE')" />
+	</sec:http>
+
+	<bean id="oauth2ExpressionHandler" class="org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler" />
+
+	<bean id="oauth2AuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint" />
+
+</beans>
