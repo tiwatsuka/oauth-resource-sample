@@ -9,16 +9,11 @@
         http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
     ">
 
-	<sec:http pattern="/api/**" create-session="stateless"
-		use-expressions="true" 
-		entry-point-ref="oauth2AuthenticationEntryPoint">
-		<sec:expression-handler ref="oauth2ExpressionHandler"/>
-		<sec:intercept-url pattern="/api/comment/**" method="GET" access="#oauth2.hasScope('READ')" />
-		<sec:intercept-url pattern="/api/comment/**" method="POST" access="#oauth2.hasScope('CREATE')" />
-		<sec:custom-filter ref="oauth2ProviderFilter" before="PRE_AUTH_FILTER" />
-	</sec:http>
-
 	<oauth2:resource-server id="oauth2ProviderFilter" resource-id="testResource" token-services-ref="tokenServices" />
+
+	<bean id="authenticationManager" class="org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager">
+		<property name="tokenServices" ref="tokenServices" />
+	</bean>
 
 	<bean id="oauth2ExpressionHandler" class="org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler" />
 
@@ -27,8 +22,11 @@
 	<bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.RemoteTokenServices">
 		<property name="restTemplate" ref="restTemplate" />
 		<property name="checkTokenEndpointUrl" value="http://localhost:8080/sample-oauth-server-web/oauth/check_token" />
+		<property name="accessTokenConverter" ref="accessTokenConverter" />
 	</bean>
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
+
+	<bean id="accessTokenConverter" class="org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter" />
 
 </beans>

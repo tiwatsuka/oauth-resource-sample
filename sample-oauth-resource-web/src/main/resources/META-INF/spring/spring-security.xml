@@ -7,16 +7,15 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     ">
 
-    <sec:http pattern="/resources/**" security="none"/>
-    <sec:http>
-        <sec:form-login/>
-        <sec:logout/>
-        <sec:access-denied-handler ref="accessDeniedHandler"/>
-        <sec:custom-filter ref="userIdMDCPutFilter" after="ANONYMOUS_FILTER"/>
-        <sec:session-management />
-    </sec:http>
-
-    <sec:authentication-manager />
+	<sec:http pattern="/api/**" create-session="stateless"
+		use-expressions="true"
+		authentication-manager-ref="authenticationManager"
+		entry-point-ref="oauth2AuthenticationEntryPoint">
+		<sec:expression-handler ref="oauth2ExpressionHandler"/>
+		<sec:intercept-url pattern="/api/comment/**" method="GET" access="#oauth2.hasScope('READ') and hasRole('ADMIN')" />
+		<sec:intercept-url pattern="/api/comment/**" method="POST" access="#oauth2.hasScope('CREATE')" />
+		<sec:custom-filter ref="oauth2ProviderFilter" before="PRE_AUTH_FILTER" />
+	</sec:http>
 
     <!-- CSRF Protection -->
     <bean id="accessDeniedHandler"
