@@ -27,6 +27,10 @@
 
 	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />
 
-	<bean id="accessTokenConverter" class="org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter" />
+	<bean id="accessTokenConverter" class="org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter">
+		<property name="userTokenConverter" ref="authenticationConverter" />
+	</bean>
+
+	<bean id="authenticationConverter" class="org.sample.oauth.app.common.security.oauth2.AuthenticationLoadUserAuthenticationConverter" />
 
 </beans>
